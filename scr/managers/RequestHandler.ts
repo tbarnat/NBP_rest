@@ -1,5 +1,5 @@
 import DataInterface from "../model/DataInterface";
-import GoldInfo = DataInterface.ItemPrice;
+import GoldInfo = DataInterface.GoldInfo;
 import ClientCode from "../enum/ClientCode";
 import NBPClient from "../clients/NBPClient";
 import GoldInfoManager from "./GoldInfoManager";

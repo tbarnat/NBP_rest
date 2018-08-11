@@ -1,6 +1,6 @@
 import DataInterface from "../model/DataInterface";
 import ItemPrice = DataInterface.ItemPrice;
-import GoldInfo = DataInterface.ItemPrice;
+import GoldInfo = DataInterface.GoldInfo;
 
 import GlobalVarialbe from "../model/GlobalVarialbe";
 
