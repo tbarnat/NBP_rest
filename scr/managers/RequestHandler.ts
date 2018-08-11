@@ -3,7 +3,6 @@ import ClientCode from "../enum/ClientCode";
 import NBPClient from "../clients/NBPClient";
 import GoldInfoManager from "./GoldInfoManager";
 import {ClientInterface} from "../model/ClientInterface";
-import "isomorphic-fetch"
 
 export default class RequestHandler {
 
@@ -13,7 +12,7 @@ export default class RequestHandler {
     private goldInfoManager: GoldInfoManager = new GoldInfoManager();
 
     //should be passed as parameter, validated and then initialized
-    private activeClient: ClientInterface = new NBPClient(fetch);
+    private activeClient: ClientInterface = new NBPClient();
 
     constructor(){}
 
@@ -69,7 +68,7 @@ export default class RequestHandler {
     private getClient(clientCode: ClientCode): any {
         switch (clientCode) {
             case ClientCode.NBP:
-                return new NBPClient(fetch);
+                return new NBPClient();
             default:
                 return null;
         }

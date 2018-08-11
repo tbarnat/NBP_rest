@@ -2,39 +2,36 @@ import ClientCode from "../enum/ClientCode";
 import CurrencyCode from "../enum/CurrencyCode";
 import {ClientInterface} from "../model/ClientInterface";
 import ItemPrice = dataInterface.ItemPrice;
+import * as request from "request-promise-native"
 
 export default class NBPClient implements ClientInterface {
 
-    private fetchFunction: typeof fetch;
-    private httpsEndpoint: string;
+    private httpsEndpoint: string = 'http://api.nbp.pl/api/';
+    //example: http://api.nbp.pl/api/cenyzlota/2018-01-04/?format=json
+    //example: http://api.nbp.pl/api/exchangerates/rates/A/USD/2018-07-12/?format=json
 
     private readonly startDate = new Date('2013-01-02');
     private readonly endDate = new Date();
 
-    public constructor(fetchFunction: typeof fetch, httpsEndpoint = '//api.nbp.pl/api/') {
-        this.fetchFunction = fetchFunction;
-        this.httpsEndpoint = httpsEndpoint;
+    public constructor() {
         this.request = this.request.bind(this)
     }
 
     public request(path: string): Promise<any> {
-        return this.fetchFunction(`${this.httpsEndpoint}/${path}`)
+        return request.get(this.httpsEndpoint+path)
             .then(res => {
-                const contentType = res.headers.get('content-type');
-                if (contentType === null) {
-                    return null
-                } else if (contentType.includes('application/json')) { //"dom","es7" required to compile properly
-                    return res.json()
-                } else {
-                    return res.text()
+                return JSON.parse(res);
+            }).catch(err => {
+                    console.log('ERROR:'+err);
+                    return err
                 }
-            })
+            )
     }
 
     //http://api.nbp.pl/api/cenyzlota/2018-07-12/?format=json
     public getGoldPrice(date: Date): Promise<number> {
         let isoDate = (date.toISOString()).substring(0, 10);
-        return this.request(`/cenyzlota/${isoDate}/?format=json`)
+        return this.request(`cenyzlota/${isoDate}/?format=json`)
             .then(value => {
                 return value[0].cena
             }).catch((err) => {
@@ -58,7 +55,7 @@ export default class NBPClient implements ClientInterface {
     //http://api.nbp.pl/api/exchangerates/rates/A/USD/2018-07-12/?format=json
     private getSingleExchangeRate(date: Date, code: CurrencyCode): Promise<ItemPrice> {
         let isoDate = (date.toISOString()).substring(0, 10);
-        return this.request(`/exchangerates/rates/A/${code}/${isoDate}/?format=json`)
+        return this.request(`exchangerates/rates/A/${code}/${isoDate}/?format=json`)
             .then(value => {
                 return {
                     "currency": code.valueOf(),

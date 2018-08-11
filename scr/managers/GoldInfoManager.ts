@@ -3,7 +3,6 @@ import ItemPrice = dataInterface.ItemPrice;
 import GlobalVarialbe from "../model/GlobalVarialbe";
 
 import ExchangeRateManager from "./ExchangeRateManager";
-import "isomorphic-fetch"
 import {ClientInterface} from "../model/ClientInterface";
 
 export default class GoldInfoManager {

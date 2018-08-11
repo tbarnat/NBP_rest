@@ -1,5 +1,4 @@
 import BaseCurrencies from "../model/BaseCurrencies";
-import "isomorphic-fetch"
 import {ClientInterface} from "../model/ClientInterface";
 import ItemPrice = dataInterface.ItemPrice;
 
