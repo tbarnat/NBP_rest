@@ -1,0 +1,7 @@
+# Created by .ignore support plugin (hsz.mobi)
+.idea
+dist
+node_modules
+tests
+NBP_rest.iml
+
