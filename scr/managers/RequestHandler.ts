@@ -10,6 +10,7 @@ export default class RequestHandler {
     private regexDatePattern = new RegExp('\\b[0-9]{4}-[0-9]{2}-[0-9]{2}\\b');
     private clientCode: ClientCode = ClientCode.NBP; // initialized value has to be discarded
     private date: Date = new Date(); // initialized value has to be discarded
+    private goldInfoManager: GoldInfoManager = new GoldInfoManager();
 
     //should be passed as parameter, validated and then initialized
     private activeClient: ClientInterface = new NBPClient(fetch);
@@ -18,7 +19,7 @@ export default class RequestHandler {
 
     public getApiGold(clientCode: string, date: string): Promise<GoldInfo>{
         if(this.isValidInput(clientCode, date)){
-            return new GoldInfoManager(this.date, this.activeClient).getGoldInfo();
+            return this.goldInfoManager.getGoldInfo(this.date, this.activeClient);
         }else{
             return Promise.resolve(GoldInfoManager.getErrorGoldInfo());
         }

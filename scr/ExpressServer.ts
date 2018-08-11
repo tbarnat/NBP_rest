@@ -5,6 +5,7 @@ import GlobalVarialbe from "./model/GlobalVarialbe";
 export default class ExpressServer {
     private expServer: any;
     private port = process.env.PORT || 3000;
+    private requestHandler: RequestHandler = new RequestHandler();
 
     constructor() {
         this.expServer = express();
@@ -17,7 +18,7 @@ export default class ExpressServer {
 
         //passing the information about gold prices for different currencies for specified client
         router.route('/:client/gold/:date').get((req, res) => {
-            new RequestHandler().getApiGold(req.params.client, req.params.date).then(goldInfo => {
+            this.requestHandler.getApiGold(req.params.client, req.params.date).then(goldInfo => {
                 if (goldInfo.effectiveDate !== GlobalVarialbe.invalidDate) {
                     res.json(goldInfo);
                 } else {

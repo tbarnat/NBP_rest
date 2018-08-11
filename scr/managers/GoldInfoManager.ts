@@ -8,20 +8,16 @@ import {ClientInterface} from "../model/ClientInterface";
 
 export default class GoldInfoManager {
 
-    private readonly effectiveDate: Date;
-    private activeClient: ClientInterface;
-    private exchangeRateManager: ExchangeRateManager;
+    /*private readonly effectiveDate: Date;
+    private activeClient: ClientInterface;*/
+    private exchangeRateManager: ExchangeRateManager = new ExchangeRateManager();
 
-    constructor(date: Date, client: ClientInterface) {
-        this.exchangeRateManager = new ExchangeRateManager(date, client);
-        this.effectiveDate = date;
-        this.activeClient = client;
-    }
+    constructor() {}
 
-    public getGoldInfo(): Promise<GoldInfo> {
-        return this.getGoldPrices().then(goldPrices => {
+    public getGoldInfo(effectiveDate: Date, activeClient: ClientInterface): Promise<GoldInfo> {
+        return this.getGoldPrices(effectiveDate, activeClient).then(goldPrices => {
             let goldInfoJson = JSON.stringify({
-                date: (this.effectiveDate.toISOString()).substring(0, 10),
+                date: (effectiveDate.toISOString()).substring(0, 10),
                 goldPrices: goldPrices
             });
             //console.log(goldInfoJson);//VVV
@@ -29,12 +25,12 @@ export default class GoldInfoManager {
         });
     }
 
-    public getGoldPrices(): Promise<ItemPrice[]> {
+    public getGoldPrices(effectiveDate: Date, activeClient: ClientInterface): Promise<ItemPrice[]> {
 
         // IT IS QUICKER, BUT LESS LEGIBLE (NO TYPE HANDICAP)
-        let rawInfo: Promise<any>[] = [];
-        rawInfo.push(this.activeClient.getGoldPrice(this.effectiveDate));
-        rawInfo.push(this.exchangeRateManager.getExchangeRates());
+        let rawInfo: Promise<any>[] =
+            [ activeClient.getGoldPrice(effectiveDate),
+                this.exchangeRateManager.getExchangeRates(effectiveDate, activeClient)];
 
         return Promise.all(rawInfo).then(value => {
             let goldPriceInPLN: number = value[0];

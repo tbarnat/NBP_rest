@@ -6,17 +6,11 @@ import ItemPrice = dataInterface.ItemPrice;
 
 export default class ExchangeRateManager {
 
-    private readonly effectiveDate: Date;
-    private activeClient: ClientInterface;
-
-    constructor(date: Date, client: ClientInterface) {
-        this.effectiveDate = date;
-        this.activeClient = client;
-    }
+    constructor() {}
 
     // all rates are referenced to PLN (4ex. EUR/PLN)
-    public getExchangeRates(): Promise<ItemPrice[]>{
-        return this.activeClient.getExchangeRates(this.effectiveDate, BaseCurrencies.getTable());
+    public getExchangeRates(effectiveDate: Date, activeClient: ClientInterface): Promise<ItemPrice[]>{
+        return activeClient.getExchangeRates(effectiveDate, BaseCurrencies.getTable());
     }
 
 }
