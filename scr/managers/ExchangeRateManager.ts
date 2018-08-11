@@ -1,6 +1,8 @@
 import BaseCurrencies from "../model/BaseCurrencies";
 import {ClientInterface} from "../model/ClientInterface";
-import ItemPrice = dataInterface.ItemPrice;
+import DataInterface from "../model/DataInterface";
+import ItemPrice = DataInterface.ItemPrice;
+
 
 
 export default class ExchangeRateManager {

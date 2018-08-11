@@ -1,5 +1,7 @@
-import GoldInfo = dataInterface.GoldInfo;
-import ItemPrice = dataInterface.ItemPrice;
+import DataInterface from "../model/DataInterface";
+import ItemPrice = DataInterface.ItemPrice;
+import GoldInfo = DataInterface.ItemPrice;
+
 import GlobalVarialbe from "../model/GlobalVarialbe";
 
 import ExchangeRateManager from "./ExchangeRateManager";

@@ -1,6 +1,7 @@
 import ClientCode from "../enum/ClientCode";
 import CurrencyCode from "../enum/CurrencyCode";
-import ItemPrice = dataInterface.ItemPrice;
+import DataInterface from "../model/DataInterface";
+import ItemPrice = DataInterface.ItemPrice;
 
 export interface ClientInterface {
 

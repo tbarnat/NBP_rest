@@ -1,8 +1,10 @@
 import ClientCode from "../enum/ClientCode";
 import CurrencyCode from "../enum/CurrencyCode";
 import {ClientInterface} from "../model/ClientInterface";
-import ItemPrice = dataInterface.ItemPrice;
+
 import * as request from "request-promise-native"
+import DataInterface from "../model/DataInterface";
+import ItemPrice = DataInterface.ItemPrice;
 
 export default class NBPClient implements ClientInterface {
 
