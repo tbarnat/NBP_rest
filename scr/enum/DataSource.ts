@@ -1,6 +1,8 @@
 enum DataSource{
-    archive = 'archive',
+
+    pending = 'request (pending...)',
+    request = 'request',
     cache  = 'cache',
-    request = 'request'
+    archive = 'archive'
 
 } export default DataSource;

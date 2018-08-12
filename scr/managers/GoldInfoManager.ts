@@ -1,4 +1,4 @@
-import DataInterface from "../model/DataInterface";
+import DataInterface from "../model/PresentableDataInterface";
 import ItemPrice = DataInterface.ItemPrice;
 import GoldInfo = DataInterface.GoldInfo;
 

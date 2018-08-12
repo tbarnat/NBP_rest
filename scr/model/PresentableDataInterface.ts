@@ -2,7 +2,7 @@ import DataSource from "../enum/DataSource";
 
 declare module DataInterface {
 
-    export interface Presentable {
+    interface Presentable {
         dataSource: DataSource;
         datedObjectInfo: DatedObjectInfo;
     }
@@ -15,7 +15,7 @@ declare module DataInterface {
         goldPrices: ItemPrice[];
     }
 
-    export interface ItemPrice {
+    interface ItemPrice {
         currency: string;
         price: number;
     }

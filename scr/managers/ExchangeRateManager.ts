@@ -1,6 +1,6 @@
 import BaseCurrencies from "../model/BaseCurrencies";
 import {ClientInterface} from "../model/ClientInterface";
-import DataInterface from "../model/DataInterface";
+import DataInterface from "../model/PresentableDataInterface";
 import ItemPrice = DataInterface.ItemPrice;
 
 

@@ -1,29 +1,21 @@
-import DataInterface from "../model/DataInterface";
-import GoldInfo = DataInterface.GoldInfo;
 import ClientCode from "../enum/ClientCode";
 import NBPClient from "../clients/NBPClient";
-import GoldInfoManager from "./GoldInfoManager";
 import {ClientInterface} from "../model/ClientInterface";
+import DataSource from "../enum/DataSource";
+import DataInterface from "../model/PresentableDataInterface";
+import DatedObjectInfo = DataInterface.DatedObjectInfo;
+import Presentable = DataInterface.Presentable;
 
-export default class RequestHandler {
 
+
+export default class HandlerUtils{
+
+    private date: Date = new Date(); // initialized value has to be discarded
     private regexDatePattern = new RegExp('\\b[0-9]{4}-[0-9]{2}-[0-9]{2}\\b');
     private clientCode: ClientCode = ClientCode.NBP; // initialized value has to be discarded
-    private date: Date = new Date(); // initialized value has to be discarded
-    private goldInfoManager: GoldInfoManager = new GoldInfoManager();
-
-    //should be passed as parameter, validated and then initialized
-    private activeClient: ClientInterface = new NBPClient();
+    private nbp: ClientInterface = new NBPClient();
 
     constructor(){}
-
-    public getApiGold(clientCode: string, date: string): Promise<GoldInfo>{
-        if(this.isValidInput(clientCode, date)){
-            return this.goldInfoManager.getGoldInfo(this.date, this.activeClient);
-        }else{
-            return Promise.resolve(GoldInfoManager.getErrorGoldInfo());
-        }
-    }
 
     /* vvv   VALIDATIONS   vvv */
 
@@ -58,23 +50,38 @@ export default class RequestHandler {
     }
 
     private isDateValidForClient(): boolean {
-        let client: ClientInterface = this.getClient(this.clientCode);
+        let client: ClientInterface = this.getClientByCode(this.clientCode);
         if (client != null) {
             return ((client.getStartDate()<this.date)&&(this.date<client.getEndDate())) ;
         }
         return false;
     }
+    // TODO add client specific validation for instance: dates which are not available for each client
 
-    // potentially this can be solved better
-    private getClient(clientCode: ClientCode): any {
+
+    /* vvv   ADDING SOURCE/ORIGINATION INFORMATION   vvv */
+
+    public addDataSourceInfo(datedObject: DatedObjectInfo, dataSource: DataSource): Presentable{
+        return {
+            dataSource: dataSource,
+            datedObjectInfo: datedObject
+        }
+    }
+
+    /* vvv   RETURN CLIENT   vvv */
+
+    // there might be a better way to associate ClientCode this Client class
+    private getClientByCode(clientCode: ClientCode): any {
         switch (clientCode) {
             case ClientCode.NBP:
-                return new NBPClient();
+                return this.nbp;
             default:
                 return null;
         }
     }
 
-    // TODO add client specific validation for instance: dates which are not available for each client
-}
+    public getClientByString(clientCode: string): any{
+        return this.getClientByCode(<ClientCode> clientCode.toUpperCase());
+    }
 
+}
