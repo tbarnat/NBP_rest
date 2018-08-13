@@ -1,8 +1,7 @@
-import DataInterface from "../model/PresentableDataInterface";
-import GoldInfo = DataInterface.GoldInfo;
 import GoldInfoManager from "../managers/GoldInfoManager";
 import HandlerUtils from "./HandlerUtils";
 import {HandlerInterface} from "../model/HandlerInterface";
+import GoldDatedInfo from "../model/GoldDatedInfo";
 
 export default class RequestHandler implements HandlerInterface {
 
@@ -13,7 +12,7 @@ export default class RequestHandler implements HandlerInterface {
         this.handlerUtils = handlerUtils;
     }
 
-    public getApiGold(clientCode: string, date: string): Promise<GoldInfo>{
+    public getApiGold(clientCode: string, date: string): Promise<GoldDatedInfo>{
         if(this.handlerUtils.isValidInput(clientCode, date)){
             return this.goldInfoManager.getGoldInfoRequest(new Date(date), this.handlerUtils.getClientByString(clientCode));
         }else{

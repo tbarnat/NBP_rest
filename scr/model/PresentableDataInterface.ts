@@ -4,16 +4,9 @@ declare module DataInterface {
 
     interface Presentable {
         dataSource: DataSource;
-        datedObjectInfo: DatedObjectInfo;
+        objectDatedInfo: any; //objectDatedInfo without dateCreated property
     }
 
-    interface DatedObjectInfo {
-        effectiveDate: string;
-    }
-
-    interface GoldInfo extends DatedObjectInfo{
-        goldPrices: ItemPrice[];
-    }
 
     interface ItemPrice {
         currency: string;

@@ -1,8 +1,9 @@
-import {DatedObjectMap, HandlerInterface} from "../model/HandlerInterface";
-import DataInterface from "../model/PresentableDataInterface";
-import DatedObjectInfo = DataInterface.DatedObjectInfo;
+/*import DataInterface from "../model/PresentableDataInterface";
+import DatedObjectInfo = DataInterface.DatedObjectInfo;*/
 import GoldInfoManager from "../managers/GoldInfoManager";
 import {UrlIdentifier} from "../model/UrlIdentifier";
+import ObjectDatedInfo from "../model/ObjectDatedInfo";
+import {ObjectDatedMap} from "../model/HandlerInterface";
 
 
 
@@ -12,21 +13,28 @@ export default class CacheHandler{ //implements HandlerInterface
 
     constructor(){}
 
-    public get(identifier: UrlIdentifier): DatedObjectInfo{
+    public get(identifier: UrlIdentifier): ObjectDatedInfo{
         let key: string = identifier.toString();
         if(identifier.objectType === 'gold'){
             return this.goldInfoManager.getGoldInfoCache(key);
         }
         //so far only 'gold' object type is handled
-        return {effectiveDate: 'error'};
+        return new ObjectDatedInfo('_invalid_');
     }
 
-    public put(identifier: UrlIdentifier, datedObjectInfo: DatedObjectInfo){
+    public put(identifier: UrlIdentifier, objectDatedInfo: ObjectDatedInfo){
         let key: string = identifier.toString();
         if(identifier.objectType === 'gold'){
-            this.goldInfoManager.putGoldInfoCache(key, datedObjectInfo);
+            objectDatedInfo.dateCreated = new Date();
+            this.goldInfoManager.putGoldInfoCache(key, objectDatedInfo);
         }
         //so far only 'gold' object type is handled
     }
 
+    public getMap(objectType: string): ObjectDatedMap | undefined{
+        if(objectType === 'gold'){
+            return this.goldInfoManager.getCacheMap();
+        }
+        return;
+    }
 }

@@ -1,12 +1,11 @@
 import DataInterface from "../model/PresentableDataInterface";
-import DatedObjectInfo = DataInterface.DatedObjectInfo;
 import ItemPrice = DataInterface.ItemPrice;
-import GoldInfo = DataInterface.GoldInfo;
 import GlobalVarialbe from "../model/GlobalVarialbe";
-
 import ExchangeRateManager from "./ExchangeRateManager";
 import {ClientInterface} from "../model/ClientInterface";
 import {GoldInfoMap} from "../model/HandlerInterface";
+import GoldDatedInfo from "../model/GoldDatedInfo";
+import ObjectDatedInfo from "../model/ObjectDatedInfo";
 
 export default class GoldInfoManager {
 
@@ -16,7 +15,7 @@ export default class GoldInfoManager {
 
     constructor() {}
 
-    public getGoldInfoRequest(effectiveDate: Date, activeClient: ClientInterface): Promise<GoldInfo> {
+    public getGoldInfoRequest(effectiveDate: Date, activeClient: ClientInterface): Promise<GoldDatedInfo> {
         return this.getGoldPrices(effectiveDate, activeClient).then(goldPrices => {
             let goldInfoJson = JSON.stringify({
                 effectiveDate: (effectiveDate.toISOString()).substring(0, 10),
@@ -47,21 +46,25 @@ export default class GoldInfoManager {
         });
     }
 
-    public getGoldInfoCache(key: string):GoldInfo {
+    public getGoldInfoCache(key: string):GoldDatedInfo {
         return this.goldCacheMap[key];
     }
 
-    public putGoldInfoCache(key: string, datedObjectInfo: DatedObjectInfo){
-        let goldInfo = datedObjectInfo as GoldInfo;
+    public putGoldInfoCache(key: string, objectDatedInfo: ObjectDatedInfo){
+        let goldInfo = objectDatedInfo as GoldDatedInfo;
         if(this.isNotNullShortHand(goldInfo)){
             this.goldCacheMap[key] = goldInfo;
             console.log('cached value for: '+key);
         }
     }
 
+    public getCacheMap(): GoldInfoMap{
+        return this.goldCacheMap;
+    }
+
     //temporary solution (checking fo null should have separate workflow with supplementation)
-    //this method should be moved to GoldInfo recognized as class
-    private isNotNullShortHand(goldInfo: GoldInfo): boolean{
+    //this method should be moved to GoldDatedInfo recognized as class
+    private isNotNullShortHand(goldInfo: GoldDatedInfo): boolean{
         if( goldInfo.effectiveDate == null){
             return false;
         }
@@ -69,15 +72,13 @@ export default class GoldInfoManager {
         goldInfo.goldPrices.forEach(goldPrice => {
             if(goldPrice.price == null){
                 isNotNull = false;
-            };
+            }
         });
         return isNotNull;
     }
 
-    // (check if full) put -> goldManagerPut
-
     //Invalid JSON is associated with 404 response
-    public static getErrorGoldInfo(): GoldInfo {
+    public static getErrorGoldInfo(): GoldDatedInfo {
         let goldInfoJson = JSON.stringify({
             effectiveDate: GlobalVarialbe.invalidDate,
             goldPrices: {

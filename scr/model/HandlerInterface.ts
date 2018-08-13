@@ -1,18 +1,17 @@
-import DataInterface from "./PresentableDataInterface";
-import GoldInfo = DataInterface.GoldInfo
-import DatedObjectInfo = DataInterface.DatedObjectInfo;
+import GoldDatedInfo from "./GoldDatedInfo";
+import ObjectDatedInfo from "./ObjectDatedInfo";
 
 
 export interface HandlerInterface{
 
-    getApiGold(clientCode: string, date: string): Promise<GoldInfo>;
+    getApiGold(clientCode: string, date: string): Promise<GoldDatedInfo>;
 
 }
 
-export interface DatedObjectMap{
-    [key: string]: DatedObjectInfo;
+export interface ObjectDatedMap{
+    [key: string]: ObjectDatedInfo;
 }
 
 export interface GoldInfoMap {
-    [key: string]: GoldInfo;
+    [key: string]: GoldDatedInfo;
 }

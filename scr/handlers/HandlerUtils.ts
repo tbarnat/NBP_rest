@@ -3,8 +3,8 @@ import NBPClient from "../clients/NBPClient";
 import {ClientInterface} from "../model/ClientInterface";
 import DataSource from "../enum/DataSource";
 import DataInterface from "../model/PresentableDataInterface";
-import DatedObjectInfo = DataInterface.DatedObjectInfo;
 import Presentable = DataInterface.Presentable;
+import ObjectDatedInfo from "../model/ObjectDatedInfo";
 
 
 
@@ -60,13 +60,27 @@ export default class HandlerUtils{
     // TODO add client specific validation for instance: dates which are not available for each client
 
 
-    /* vvv   ADDING SOURCE/ORIGINATION INFORMATION   vvv */
+    /* vvv   MODIFY OBJECT FOR PRESENTATION   vvv */
 
-    public addDataSourceInfo(datedObject: DatedObjectInfo, dataSource: DataSource): Presentable{
+    public present(objectDatedInfo: ObjectDatedInfo, dataSource: DataSource): Presentable{
         return {
             dataSource: dataSource,
-            datedObjectInfo: datedObject
+            objectDatedInfo: this.limitExposure(objectDatedInfo)
         }
+    }
+
+    // method returns copy of object without this.dateCreated key
+    private limitExposure(objectDatedInfo: ObjectDatedInfo): any{
+
+        let duplicate: any = {};
+        console.log('jestem');
+        Object.keys(objectDatedInfo).forEach(key => {
+            if(key != 'dateCreated'){
+                duplicate[key] = objectDatedInfo[key];
+                console.log('ping');
+            }
+        });
+        return duplicate;
     }
 
     /* vvv   RETURN CLIENT   vvv */

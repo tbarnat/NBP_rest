@@ -5,9 +5,8 @@ import DataSource from "./enum/DataSource";
 import HandlerUtils from "./handlers/HandlerUtils";
 import CacheHandler from "./handlers/CacheHandler";
 import ArchiveHandler from "./handlers/ArchiveHandler";
-import DataInterface from "./model/PresentableDataInterface";
-import DatedObjectInfo = DataInterface.DatedObjectInfo;
 import {UrlIdentifier} from "./model/UrlIdentifier";
+import ObjectDatedInfo from "./model/ObjectDatedInfo";
 
 
 
@@ -34,31 +33,35 @@ export default class ExpressServer {
 
             let identifier = new UrlIdentifier(req.params.client,'gold',req.params.date);
 
-            let datedObjectInfo: DatedObjectInfo;
+            let objectDatedInfo: ObjectDatedInfo;
 
 
             /*//find in archive
-            datedObjectInfo= this.archiveHandler.get(identifier)
-            if(datedObjectInfo !== null){
-                res.json(this.handlerUtils.addDataSourceInfo(datedObjectInfo,DataSource.archive))
+            objectDatedInfo= this.archiveHandler.get(identifier)
+            if(objectDatedInfo !== null){
+                res.json(this.handlerUtils.present(objectDatedInfo,DataSource.archive))
             }else{
                 //cache/request
             }*/
 
             //find in cache only
-            datedObjectInfo= this.cacheHandler.get(identifier);
-            if(datedObjectInfo != null){
-                res.json(this.handlerUtils.addDataSourceInfo(datedObjectInfo,DataSource.cache))
+            objectDatedInfo= this.cacheHandler.get(identifier);
+            if(objectDatedInfo != null){
+                res.json(this.handlerUtils.present(objectDatedInfo,DataSource.cache))
             }else{
-                this.requestHandler.getApiGold(req.params.client, req.params.date).then(goldInfo => {
-                    if (goldInfo.effectiveDate !== GlobalVarialbe.invalidDate) {
-                        this.cacheHandler.put(identifier, goldInfo);
-                        res.json(this.handlerUtils.addDataSourceInfo(goldInfo,DataSource.request));
+                this.requestHandler.getApiGold(req.params.client, req.params.date).then(goldDatedInfo => {
+                    if (goldDatedInfo.effectiveDate !== GlobalVarialbe.invalidDate) {
+                        this.cacheHandler.put(identifier, goldDatedInfo);
+                        res.json(this.handlerUtils.present(goldDatedInfo,DataSource.request));
                     } else {
                         res.status(404).send('Data not found');
                     }
                 })
             }
+
+
+            //logging whole map allows to see the creation time under the hood
+            //console.log(this.cacheHandler.getMap(identifier.objectType))
         });
 
         //default response: 404
@@ -77,5 +80,7 @@ export default class ExpressServer {
         });
         console.log(`server is listening on ${port}`);
     }
+
+
 }
 
