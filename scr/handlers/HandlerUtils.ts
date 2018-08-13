@@ -73,11 +73,9 @@ export default class HandlerUtils{
     private limitExposure(objectDatedInfo: ObjectDatedInfo): any{
 
         let duplicate: any = {};
-        console.log('jestem');
         Object.keys(objectDatedInfo).forEach(key => {
             if(key != 'dateCreated'){
                 duplicate[key] = objectDatedInfo[key];
-                console.log('ping');
             }
         });
         return duplicate;
