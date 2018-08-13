@@ -3,10 +3,12 @@ import RequestHandler from "./handlers/RequestHandler";
 import GlobalVarialbe from "./model/GlobalVarialbe";
 import DataSource from "./enum/DataSource";
 import HandlerUtils from "./handlers/HandlerUtils";
-import {UrlIdentifier} from "./model/UrlIdentifier";
 import CacheHandler from "./handlers/CacheHandler";
 import ArchiveHandler from "./handlers/ArchiveHandler";
-import Presentable from "./model/PresentableDataInterface";
+import DataInterface from "./model/PresentableDataInterface";
+import DatedObjectInfo = DataInterface.DatedObjectInfo;
+import {UrlIdentifier} from "./model/UrlIdentifier";
+
 
 
 export default class ExpressServer {
@@ -30,50 +32,33 @@ export default class ExpressServer {
         //passing the information about gold prices for different currencies for specified client
         router.route('/:client/gold/:date').get((req, res) => {
 
-            //create identifier
-            let identifier: UrlIdentifier = {
-                client: req.params.client,
-                objectType: 'gold',
-                effectiveDate: req.params.date
-            };
+            let identifier = new UrlIdentifier(req.params.client,'gold',req.params.date);
 
-            let datedObjectInfo: Presentable.DatedObjectInfo;
+            let datedObjectInfo: DatedObjectInfo;
 
-            /*//TODO check if it could be solved with flat block
 
-            //find in archive
+            /*//find in archive
             datedObjectInfo= this.archiveHandler.get(identifier)
             if(datedObjectInfo !== null){
                 res.json(this.handlerUtils.addDataSourceInfo(datedObjectInfo,DataSource.archive))
             }else{
-
-                //find in cache
-                datedObjectInfo= this.cacheHandler.get(identifier)
-                if(datedObjectInfo !== null){
-                    res.json(this.handlerUtils.addDataSourceInfo(datedObjectInfo,DataSource.cache))
-                }else{
-
-                    // resolve_fully (timeout 3000) catch resolve_partially and async until resolved_fully
-                    this.requestHandler.getApiGold(req.params.client, req.params.date).then(goldInfo => {
-                        if (goldInfo.effectiveDate !== GlobalVarialbe.invalidDate) {
-                            res.json(this.handlerUtils.addDataSourceInfo(goldInfo,DataSource.request));
-                            //add to cached
-                        } else {
-                            res.status(404).send('Data not found');
-                        }
-                    })
-                }
+                //cache/request
             }*/
 
-            // old version
-            this.requestHandler.getApiGold(req.params.client, req.params.date).then(goldInfo => {
-                if (goldInfo.effectiveDate !== GlobalVarialbe.invalidDate) {
-                    res.json(this.handlerUtils.addDataSourceInfo(goldInfo,DataSource.request));
-                    //add to cached
-                } else {
-                    res.status(404).send('Data not found');
-                }
-            })
+            //find in cache only
+            datedObjectInfo= this.cacheHandler.get(identifier);
+            if(datedObjectInfo != null){
+                res.json(this.handlerUtils.addDataSourceInfo(datedObjectInfo,DataSource.cache))
+            }else{
+                this.requestHandler.getApiGold(req.params.client, req.params.date).then(goldInfo => {
+                    if (goldInfo.effectiveDate !== GlobalVarialbe.invalidDate) {
+                        this.cacheHandler.put(identifier, goldInfo);
+                        res.json(this.handlerUtils.addDataSourceInfo(goldInfo,DataSource.request));
+                    } else {
+                        res.status(404).send('Data not found');
+                    }
+                })
+            }
         });
 
         //default response: 404

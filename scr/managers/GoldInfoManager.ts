@@ -1,24 +1,25 @@
 import DataInterface from "../model/PresentableDataInterface";
+import DatedObjectInfo = DataInterface.DatedObjectInfo;
 import ItemPrice = DataInterface.ItemPrice;
 import GoldInfo = DataInterface.GoldInfo;
-
 import GlobalVarialbe from "../model/GlobalVarialbe";
 
 import ExchangeRateManager from "./ExchangeRateManager";
 import {ClientInterface} from "../model/ClientInterface";
+import {GoldInfoMap} from "../model/HandlerInterface";
 
 export default class GoldInfoManager {
 
-    /*private readonly effectiveDate: Date;
-    private activeClient: ClientInterface;*/
     private exchangeRateManager: ExchangeRateManager = new ExchangeRateManager();
+    private goldCacheMap: GoldInfoMap = {};
+    private goldArchiveMap: GoldInfoMap = {};
 
     constructor() {}
 
-    public getGoldInfo(effectiveDate: Date, activeClient: ClientInterface): Promise<GoldInfo> {
+    public getGoldInfoRequest(effectiveDate: Date, activeClient: ClientInterface): Promise<GoldInfo> {
         return this.getGoldPrices(effectiveDate, activeClient).then(goldPrices => {
             let goldInfoJson = JSON.stringify({
-                date: (effectiveDate.toISOString()).substring(0, 10),
+                effectiveDate: (effectiveDate.toISOString()).substring(0, 10),
                 goldPrices: goldPrices
             });
             //console.log(goldInfoJson);//VVV
@@ -28,7 +29,7 @@ export default class GoldInfoManager {
 
     public getGoldPrices(effectiveDate: Date, activeClient: ClientInterface): Promise<ItemPrice[]> {
 
-        // IT IS QUICKER, BUT LESS LEGIBLE (NO TYPE HANDICAP)
+        // TODO define type
         let rawInfo: Promise<any>[] =
             [ activeClient.getGoldPrice(effectiveDate),
                 this.exchangeRateManager.getExchangeRates(effectiveDate, activeClient)];
@@ -44,26 +45,38 @@ export default class GoldInfoManager {
         }).catch((err) => {
             return err;
         });
-
-        /*IT IS EASY TO READ, BUT IT IS SEQUENTIAL
-        let goldPriceInPLN: number;
-        return this.activeClient.getGoldPrice(this.effectiveDate).then(value => {
-            goldPriceInPLN = value;
-            return this.exchangeRateManager.getExchangeRates()
-        }).then(value => {
-            return value.map(item => {
-
-                return {
-                    "currency": item.currency,
-                    "price": item.price * goldPriceInPLN
-                }
-            })
-        }).catch((err) => {
-            return err;
-        })*/
     }
 
-    //Error JSON is recognized to signal 404 response
+    public getGoldInfoCache(key: string):GoldInfo {
+        return this.goldCacheMap[key];
+    }
+
+    public putGoldInfoCache(key: string, datedObjectInfo: DatedObjectInfo){
+        let goldInfo = datedObjectInfo as GoldInfo;
+        if(this.isNotNullShortHand(goldInfo)){
+            this.goldCacheMap[key] = goldInfo;
+            console.log('cached value for: '+key);
+        }
+    }
+
+    //temporary solution (checking fo null should have separate workflow with supplementation)
+    //this method should be moved to GoldInfo recognized as class
+    private isNotNullShortHand(goldInfo: GoldInfo): boolean{
+        if( goldInfo.effectiveDate == null){
+            return false;
+        }
+        let isNotNull:boolean = true;
+        goldInfo.goldPrices.forEach(goldPrice => {
+            if(goldPrice.price == null){
+                isNotNull = false;
+            };
+        });
+        return isNotNull;
+    }
+
+    // (check if full) put -> goldManagerPut
+
+    //Invalid JSON is associated with 404 response
     public static getErrorGoldInfo(): GoldInfo {
         let goldInfoJson = JSON.stringify({
             effectiveDate: GlobalVarialbe.invalidDate,

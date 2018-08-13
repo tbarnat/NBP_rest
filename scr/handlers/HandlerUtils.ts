@@ -13,6 +13,7 @@ export default class HandlerUtils{
     private date: Date = new Date(); // initialized value has to be discarded
     private regexDatePattern = new RegExp('\\b[0-9]{4}-[0-9]{2}-[0-9]{2}\\b');
     private clientCode: ClientCode = ClientCode.NBP; // initialized value has to be discarded
+
     private nbp: ClientInterface = new NBPClient();
 
     constructor(){}

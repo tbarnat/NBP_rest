@@ -15,7 +15,7 @@ export default class RequestHandler implements HandlerInterface {
 
     public getApiGold(clientCode: string, date: string): Promise<GoldInfo>{
         if(this.handlerUtils.isValidInput(clientCode, date)){
-            return this.goldInfoManager.getGoldInfo(new Date(date), this.handlerUtils.getClientByString(clientCode));
+            return this.goldInfoManager.getGoldInfoRequest(new Date(date), this.handlerUtils.getClientByString(clientCode));
         }else{
             return Promise.resolve(GoldInfoManager.getErrorGoldInfo());
         }
